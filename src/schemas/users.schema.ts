@@ -2,19 +2,34 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
 @Schema()
 export class Users {
-  @Prop()
+  @Prop({ required: true })
   name: string;
 
-  @Prop()
+  @Prop({ required: true, unique: true })
   email: string;
 
-  @Prop()
+  @Prop({ required: false })
   password: string;
 
-  @Prop()
+  @Prop({ required: false })
+  phone?: string;
+
+  @Prop({ required: false, type: String })
+  address?: string;
+
+  @Prop({ required: false, type: Date })
+  dateOfBirth?: Date;
+
+  @Prop({ default: true, type: Boolean })
+  isActive?: boolean;
+
+  @Prop({ required: false, type: String })
+  role?: string;
+
+  @Prop({ default: Date.now, type: Date })
   updatedAt: Date;
 
-  @Prop()
+  @Prop({ default: Date.now, type: Date })
   createdAt: Date;
 }
 
