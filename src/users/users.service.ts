@@ -8,7 +8,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Users } from 'src/schemas/users.schema';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 
 @Injectable()
 export class UsersService {
@@ -37,8 +37,13 @@ export class UsersService {
     return data;
   }
 
-  async findOne(id: number) {
-    const data = await this.usersModel.findById(id).exec();
+  async findOne(id: string) {
+    console.log('Finding user with id:', id);
+    const data = await this.usersModel
+      .findById({
+        _id: new Types.ObjectId(id),
+      })
+      .exec();
     return data;
   }
 

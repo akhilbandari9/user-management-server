@@ -1,9 +1,8 @@
-import { Injectable } from '@nestjs/common';
-import { CreateAuthDto } from './dto/create-auth.dto';
-import { UpdateAuthDto } from './dto/update-auth.dto';
+import { Injectable, Request } from '@nestjs/common';
 import { SignInDto } from './dto/sign-in.dto';
 import { UsersService } from 'src/users/users.service';
 import { JwtService } from '@nestjs/jwt';
+import { JWT_SECRET } from './constants';
 
 @Injectable()
 export class AuthService {
@@ -12,29 +11,31 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  create(createAuthDto: CreateAuthDto) {
-    return 'This action adds a new auth';
-  }
+  async getProfile(req) {
+    console.log(req.headers.authorization);
+    const [type, token] = req.headers.authorization?.split(' ');
+    if (type !== 'Bearer' || !token) {
+      throw new Error('Invalid authorization header');
+    }
 
-  findAll() {
-    return `This action returns all auth`;
-  }
+    const decodedToken = await this.jwtService.verifyAsync(token, {
+      secret: JWT_SECRET,
+    });
+    console.log('Decoded token:', decodedToken);
 
-  findOne(id: number) {
-    return `This action returns a #${id} auth`;
-  }
-
-  update(id: number, updateAuthDto: UpdateAuthDto) {
-    return `This action updates a #${id} auth`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} auth`;
+    const user = await this.userService.findOne(decodedToken?.sub);
+    if (!user) {
+      throw new Error('User not found');
+    }
+    return {
+      id: user._id,
+      email: user.email,
+      name: user.name,
+    };
   }
 
   async signIn(signInDto: SignInDto) {
     const user = await this.userService.findUserByEmail(signInDto.email);
-    console.log('User found:', user);
 
     const payload = {
       email: user.email,
