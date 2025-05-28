@@ -38,7 +38,6 @@ export class UsersService {
   }
 
   async findOne(id: string) {
-    console.log('Finding user with id:', id);
     const data = await this.usersModel
       .findById({
         _id: new Types.ObjectId(id),

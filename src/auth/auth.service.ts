@@ -12,7 +12,6 @@ export class AuthService {
   ) {}
 
   async getProfile(req) {
-    console.log(req.headers.authorization);
     const [type, token] = req.headers.authorization?.split(' ');
     if (type !== 'Bearer' || !token) {
       throw new Error('Invalid authorization header');
@@ -21,7 +20,6 @@ export class AuthService {
     const decodedToken = await this.jwtService.verifyAsync(token, {
       secret: JWT_SECRET,
     });
-    console.log('Decoded token:', decodedToken);
 
     const user = await this.userService.findOne(decodedToken?.sub);
     if (!user) {
